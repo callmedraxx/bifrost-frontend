@@ -48,13 +48,14 @@ npm run start        # http://localhost:3000
 
 1. Import this repo in Vercel.
 2. Set two **server** env vars (not `NEXT_PUBLIC_`):
-   - `BIFROST_URL` → your backend's public URL (e.g. `http://206.189.100.31:8088`)
+   - `BIFROST_URL` → your backend's public URL (e.g. `https://206.189.100.31.sslip.io`)
    - `BIFROST_API_KEY` → the same token set as `BIFROST_API_KEY` on the backend
 3. Deploy.
 
 > The Vercel server (not the browser) reaches the backend, so the backend must
-> be reachable from Vercel's network — i.e. exposed publicly. Keep
-> `BIFROST_API_KEY` set on the backend so the exposed endpoint requires auth.
+> be reachable from Vercel's network. It's fronted by nginx + Let's Encrypt TLS
+> at `https://206.189.100.31.sslip.io`, and `BIFROST_API_KEY` is required on the
+> API routes — so the exposed endpoint is both encrypted and authenticated.
 
 ## Backend endpoints used (server-side only)
 

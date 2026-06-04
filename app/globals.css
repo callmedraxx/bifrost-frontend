@@ -1,0 +1,399 @@
+:root {
+  --bg-0: #05060c;
+  --bg-1: #0a0d18;
+  --glass: rgba(20, 26, 44, 0.55);
+  --glass-2: rgba(28, 35, 58, 0.6);
+  --border: rgba(120, 140, 200, 0.16);
+  --border-strong: rgba(140, 165, 255, 0.4);
+  --text: #eef1fb;
+  --muted: #9aa3bd;
+  --faint: #6b748f;
+
+  /* Bifröst spectrum — the rainbow bridge */
+  --c1: #ff4d6d;
+  --c2: #ff9e44;
+  --c3: #ffe14d;
+  --c4: #4dd88a;
+  --c5: #46c9ff;
+  --c6: #7c6bff;
+  --c7: #c84dff;
+  --spectrum: linear-gradient(
+    90deg,
+    var(--c1),
+    var(--c2),
+    var(--c3),
+    var(--c4),
+    var(--c5),
+    var(--c6),
+    var(--c7)
+  );
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-0);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Aurora / starfield backdrop ---------------------------------------------- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20% -20% -20% -20%;
+  z-index: -2;
+  background:
+    radial-gradient(40% 35% at 18% 12%, rgba(124, 107, 255, 0.28), transparent 70%),
+    radial-gradient(38% 32% at 82% 8%, rgba(70, 201, 255, 0.22), transparent 70%),
+    radial-gradient(45% 40% at 70% 88%, rgba(255, 77, 109, 0.18), transparent 70%),
+    radial-gradient(50% 45% at 25% 92%, rgba(77, 216, 138, 0.16), transparent 72%),
+    var(--bg-0);
+  filter: saturate(1.1);
+  animation: drift 22s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 0.5px, transparent 0.6px);
+  background-size: 46px 46px;
+  opacity: 0.05;
+}
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-2%, 1.5%, 0) scale(1.05); }
+}
+
+.wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 40px 22px 96px;
+}
+
+/* Hero --------------------------------------------------------------------- */
+.hero {
+  text-align: center;
+  margin-bottom: 14px;
+}
+.bridge {
+  width: 100%;
+  height: 96px;
+  display: block;
+  margin: 0 auto 6px;
+  overflow: visible;
+}
+.bridge path.arc {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 6px 18px rgba(90, 120, 255, 0.35));
+}
+.bridge .glow {
+  stroke: url(#spectrum);
+  opacity: 0.25;
+  stroke-width: 14;
+  filter: blur(6px);
+}
+.title {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 4px 0 0;
+  background: var(--spectrum);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: shimmer 8s linear infinite;
+}
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+.subtitle {
+  color: var(--muted);
+  margin: 8px 0 26px;
+  font-size: 14.5px;
+}
+
+/* Status pills ------------------------------------------------------------- */
+.statusline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  color: var(--muted);
+}
+.badge.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--faint);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5);
+}
+.dot.ok {
+  background: var(--c4);
+  animation: pulse 2s infinite;
+}
+.dot.bad {
+  background: var(--c1);
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(77, 216, 138, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(77, 216, 138, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(77, 216, 138, 0); }
+}
+
+/* Glass panels ------------------------------------------------------------- */
+.panel {
+  position: relative;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.8);
+}
+.panel-title {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.row + .row {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.toggle-label {
+  font-weight: 650;
+  font-size: 15.5px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.state {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.state.on {
+  color: #061018;
+  background: var(--c4);
+  border-color: transparent;
+}
+.state.off {
+  color: var(--muted);
+}
+.toggle-desc {
+  color: var(--muted);
+  font-size: 12.5px;
+  margin-top: 5px;
+  max-width: 560px;
+  line-height: 1.55;
+}
+
+/* Spectrum switch ---------------------------------------------------------- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 58px;
+  height: 30px;
+  flex: 0 0 auto;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(10, 14, 26, 0.8);
+  border: 1px solid var(--border);
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 999px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--muted);
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+}
+.switch input:checked + .slider {
+  background: var(--spectrum);
+  background-size: 200% auto;
+  border-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+.switch input:checked + .slider:before {
+  transform: translateX(28px);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.switch input:disabled + .slider {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Composer ----------------------------------------------------------------- */
+textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  background: rgba(8, 11, 22, 0.7);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14.5px;
+  font-family: inherit;
+  line-height: 1.6;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+textarea::placeholder {
+  color: var(--faint);
+}
+textarea:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgba(124, 140, 255, 0.12);
+}
+
+.send-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+.btn {
+  position: relative;
+  background: var(--spectrum);
+  background-size: 200% auto;
+  color: #060912;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 26px;
+  font-size: 14.5px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform 0.12s, filter 0.2s, background-position 0.6s;
+  box-shadow: 0 8px 24px -8px rgba(124, 107, 255, 0.6);
+}
+.btn:hover:not(:disabled) {
+  background-position: 100% center;
+  transform: translateY(-1px);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+.hint {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.route-pill {
+  font-weight: 700;
+  background: var(--spectrum);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Response ----------------------------------------------------------------- */
+.response-wrap {
+  position: relative;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(180deg, var(--border-strong), transparent);
+}
+.response {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: rgba(8, 11, 22, 0.85);
+  border-radius: 13px;
+  padding: 16px 18px;
+  min-height: 70px;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.typing {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c5);
+  animation: pulse 1.2s infinite;
+}
+.meta {
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  padding: 3px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--glass-2);
+}
+.chip b {
+  color: var(--text);
+}
+
+.err {
+  color: var(--c1);
+  font-size: 13px;
+  margin-top: 10px;
+}

@@ -33,6 +33,7 @@ export default function Home() {
   const [connected, setConnected] = useState(null); // null=unknown, true/false
   const [settings, setSettings] = useState({ enabled: true, passthrough_harmful: true });
   const [model, setModel] = useState("");
+  const [models, setModels] = useState([]);
   const [savingKey, setSavingKey] = useState(null); // which toggle is mid-flight
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState("");
@@ -56,9 +57,47 @@ export default function Home() {
     }
   }, []);
 
+  // Fetch the available model list from the backend (proxied Groq /v1/models).
+  const loadModels = useCallback(async () => {
+    try {
+      const r = await fetch(`${API}/models`, { cache: "no-store" });
+      if (!r.ok) return;
+      const d = await r.json();
+      const ids = (d?.data || []).map((m) => m.id).filter(Boolean).sort();
+      setModels(ids);
+    } catch {
+      /* non-fatal: keep whatever model the backend reports */
+    }
+  }, []);
+
   useEffect(() => {
     loadSettings();
-  }, [loadSettings]);
+    loadModels();
+  }, [loadSettings, loadModels]);
+
+  // Switch the backend's active model at runtime.
+  async function changeModel(id) {
+    if (!id || id === model) return;
+    const prev = model;
+    setModel(id);
+    setSavingKey("model");
+    setError("");
+    try {
+      const r = await fetch(`${API}/settings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model: id }),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json();
+      setModel(d.model || id);
+    } catch (e) {
+      setModel(prev);
+      setError(`Failed to switch model: ${e.message}`);
+    } finally {
+      setSavingKey(null);
+    }
+  }
 
   // Flip a runtime toggle on the backend; optimistic, reverts on failure.
   async function toggle(key) {
@@ -129,11 +168,34 @@ export default function Home() {
           <span className={`dot ${connected ? "ok" : connected === false ? "bad" : ""}`} />
           {connected === null ? "connecting…" : connected ? "backend connected" : "backend offline"}
         </span>
-        {model && <span className="badge mono">model · {model}</span>}
       </div>
 
       <section className="panel">
         <div className="panel-title">Runtime controls</div>
+
+        <div className="row">
+          <div>
+            <div className="toggle-label">Model</div>
+            <div className="toggle-desc">
+              The upstream Groq model. Switches at runtime. Models marked non-chat (audio /
+              classifier) will error if used for a chat prompt.
+            </div>
+          </div>
+          <select
+            className="select"
+            value={model}
+            disabled={!connected || savingKey === "model"}
+            onChange={(e) => changeModel(e.target.value)}
+          >
+            {model && !models.includes(model) && <option value={model}>{model}</option>}
+            {models.map((id) => (
+              <option key={id} value={id}>
+                {id}
+                {/(whisper|orpheus|prompt-guard|tts)/i.test(id) ? "  · non-chat" : ""}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="row">
           <div>

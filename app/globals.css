@@ -231,6 +231,37 @@ body::after {
   line-height: 1.55;
 }
 
+/* Model select ------------------------------------------------------------- */
+.select {
+  flex: 0 0 auto;
+  max-width: 320px;
+  background: rgba(8, 11, 22, 0.8);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.select:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+.select:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 3px rgba(124, 140, 255, 0.12);
+}
+.select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.select option {
+  background: #0a0d18;
+  color: var(--text);
+}
+
 /* Spectrum switch ---------------------------------------------------------- */
 .switch {
   position: relative;

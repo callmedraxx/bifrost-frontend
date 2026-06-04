@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-// Backend base URL. Override at build/run time with NEXT_PUBLIC_BIFROST_URL,
-// e.g. http://206.189.100.31:8088 when pointing at the droplet.
-const API = (process.env.NEXT_PUBLIC_BIFROST_URL || "http://localhost:8088").replace(/\/$/, "");
+// The browser talks only to this app's own server-side API routes (a
+// backend-for-frontend). Those routes forward to the Bifrost backend and add
+// the bearer token from a server-only env var — so the token and the backend
+// URL are never exposed to the browser, and there's no CORS to deal with.
+const API = "/api";
 
 function BridgeArc() {
   // Stylized Bifröst — a rainbow bridge arc.
@@ -90,7 +92,7 @@ export default function Home() {
     setResponse("");
     setMeta(null);
     try {
-      const r = await fetch(`${API}/v1/chat/completions`, {
+      const r = await fetch(`${API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: [{ role: "user", content: text }] }),
@@ -128,7 +130,6 @@ export default function Home() {
           {connected === null ? "connecting…" : connected ? "backend connected" : "backend offline"}
         </span>
         {model && <span className="badge mono">model · {model}</span>}
-        <span className="badge mono">{API}</span>
       </div>
 
       <section className="panel">

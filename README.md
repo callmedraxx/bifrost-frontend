@@ -13,13 +13,21 @@ never-refuse bridge. It connects to the Bifrost backend and lets you:
 Both toggles call the backend's `POST /settings`, which mutates the live
 config — the change takes effect on the very next request, no restart.
 
+## Architecture
+
+The browser never talks to the Bifrost backend directly. It calls this app's
+own server-side API routes (`/api/settings`, `/api/chat`) — a
+backend-for-frontend — which forward to the backend and attach the bearer
+token. So the token and the backend URL stay server-side (never in the browser
+bundle), and there is no CORS to configure.
+
 ## Configure
 
 ```bash
 cp .env.local.example .env.local
-# point it at your backend:
-#   NEXT_PUBLIC_BIFROST_URL=http://localhost:8088
-#   NEXT_PUBLIC_BIFROST_URL=http://206.189.100.31:8088
+# server-only vars (no NEXT_PUBLIC_ prefix):
+#   BIFROST_URL=http://localhost:8088        (or the droplet's public URL)
+#   BIFROST_API_KEY=<must match backend BIFROST_API_KEY>
 ```
 
 ## Develop
@@ -39,15 +47,16 @@ npm run start        # http://localhost:3000
 ## Deploy on Vercel
 
 1. Import this repo in Vercel.
-2. Set the env var **`NEXT_PUBLIC_BIFROST_URL`** to your backend's public URL.
+2. Set two **server** env vars (not `NEXT_PUBLIC_`):
+   - `BIFROST_URL` → your backend's public URL (e.g. `http://206.189.100.31:8088`)
+   - `BIFROST_API_KEY` → the same token set as `BIFROST_API_KEY` on the backend
 3. Deploy.
 
-> The backend must be reachable from the browser and send permissive CORS
-> headers (it does: `Access-Control-Allow-Origin: *`). If your backend is bound
-> to `127.0.0.1` on the droplet, expose it (widen the Docker `ports` mapping)
-> before the deployed frontend can reach it.
+> The Vercel server (not the browser) reaches the backend, so the backend must
+> be reachable from Vercel's network — i.e. exposed publicly. Keep
+> `BIFROST_API_KEY` set on the backend so the exposed endpoint requires auth.
 
-## Backend endpoints used
+## Backend endpoints used (server-side only)
 
 | Method | Path                   | Purpose                          |
 |--------|------------------------|----------------------------------|
